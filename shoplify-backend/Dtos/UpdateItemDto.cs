@@ -1,9 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace shoplify_backend.Dtos;
 
 public record class UpdateItemDto(
-    string Name,
-    string Type,
-    string Description,
-    decimal Price,
+    [Required] [StringLength(50)] string Name,
+    [Required] [StringLength(20)] string Type,
+    [Required] [StringLength(100)] string Description,
+    [Range(1, 100)] decimal Price,
     int Stock
 );
