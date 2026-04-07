@@ -30,3 +30,6 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:5154/items/1
+
+###
+GET http://localhost:5154/testrun

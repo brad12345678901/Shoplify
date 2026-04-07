@@ -46,7 +46,7 @@ public static class ItemsEndpoints
         //GET Specific Item
         group
             .MapGet(
-                "/{id}",
+                "/{id:int}",
                 (int id) =>
                 {
                     var item = items.Find(item => item.Id == id);
@@ -78,7 +78,7 @@ public static class ItemsEndpoints
 
         //Update Function
         group.MapPut(
-            "/{id}",
+            "/{id:int}",
             (int id, UpdateItemDto updateItem) =>
             {
                 var index = items.FindIndex(item => item.Id == id);
@@ -105,7 +105,7 @@ public static class ItemsEndpoints
 
         //DELETE Function
         group.MapDelete(
-            "/{id}",
+            "/{id:int}",
             (int id) =>
             {
                 items.RemoveAll(item => item.Id == id);
