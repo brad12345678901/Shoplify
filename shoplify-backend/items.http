@@ -1,0 +1,32 @@
+GET http://localhost:5154/items
+
+###
+GET http://localhost:5154/items/5
+
+
+###
+POST http://localhost:5154/items
+Content-Type: application/json
+
+{
+    "Name": "Item 1",
+    "Type": "Item Type 1",
+    "Description": "Sample Item 1",
+    "Price": 59.99,
+    "Stock": 10
+}
+
+###
+PUT http://localhost:5154/items/1
+Content-Type: application/json
+
+{
+    "Name": "Item 1",
+    "Type": "Item Type 1",
+    "Description": "Sample Item 1",
+    "Price": 59.99,
+    "Stock": 10
+}
+
+###
+DELETE http://localhost:5154/items/1

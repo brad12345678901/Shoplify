@@ -1,12 +1,10 @@
+using shoplify_backend.Dtos;
+using shoplify_backend.EndPoints;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
 
-app.MapGet("/", () => new
-{
-    Message = "Hello World!",
-    Status = "Success",
-    Timestamp = DateTime.Now
-});
+app.MapItemsEndPoint();
 
 app.Run();
