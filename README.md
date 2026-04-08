@@ -21,7 +21,7 @@ Inside your `appsettings.Development.json` file, Edit
 ```json
 "ConnectionString" : {"DefaultConnection":"Host=<DATABASE HOSTNAME>;Database=<DATABASE NAME>;Port=<DATABASE PORT>;Username=<DATABASE USERNAME>;Password=<DATABASE ROOT>"}
 ```
-Replace all that is enclosed with `<>` with the necessary database connection parameters located in $\color{blue}\texttt{DefaultConnection}$
+Replace all that is enclosed with `<>` with the necessary database connection parameters
 
  Then inside the terminal, make sure that the terminal is within the directory of your project
 
