@@ -30,3 +30,41 @@ Replace all that is enclosed with `<>` with the necessary database connection pa
 dotnet ef database update
 ```
 This will initialize all migrations, which imports necessary tables inside your PostgreSQL so make sure your database is fresh and new.
+
+
+## Additional Commands
+### Seeders 
+
+You can now create an class file of seeder under `seeders` folder, make sure it implements the interface `ISeeder` to work, follow the `CategorySeeder` as an example, then type 
+
+``` terminal
+dotnet run -- --seed
+```
+
+to your terminal to run all seeders. if you only want a specific seeder
+
+``` terminal 
+dotnet run -- --seed SeederName
+```
+
+Make sure any of the declared seeder has the same exact name and casings up to file name 
+
+so for example, `ItemSeeder.cs`
+
+your classname must be 
+
+```c#
+public class ItemSeeder : ISeeder
+```
+
+It must also implement a method called `Seed` so your seeder class structure must look like
+
+```C#
+public class ItemSeeder : ISeeder
+{
+    public void Seed(DBContext context)
+    {
+      //Code to add data
+    }
+}
+```
