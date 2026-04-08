@@ -15,26 +15,35 @@ namespace shoplify_backend.Migrations
                 name: "Category",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    Id = table
+                        .Column<int>(type: "integer", nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
+                    Name = table.Column<string>(type: "text", nullable: false),
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Category", x => x.Id);
-                });
+                }
+            );
 
             migrationBuilder.CreateTable(
                 name: "Items",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table
+                        .Column<int>(type: "integer", nullable: false)
+                        .Annotation(
+                            "Npgsql:ValueGenerationStrategy",
+                            NpgsqlValueGenerationStrategy.IdentityByDefaultColumn
+                        ),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Type = table.Column<string>(type: "text", nullable: false),
                     CategoryId = table.Column<int>(type: "integer", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    Price = table.Column<decimal>(type: "numeric", nullable: false)
+                    Price = table.Column<decimal>(type: "numeric", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -44,23 +53,24 @@ namespace shoplify_backend.Migrations
                         column: x => x.CategoryId,
                         principalTable: "Category",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+                        onDelete: ReferentialAction.Cascade
+                    );
+                }
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_Items_CategoryId",
                 table: "Items",
-                column: "CategoryId");
+                column: "CategoryId"
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Items");
+            migrationBuilder.DropTable(name: "Items");
 
-            migrationBuilder.DropTable(
-                name: "Category");
+            migrationBuilder.DropTable(name: "Category");
         }
     }
 }
