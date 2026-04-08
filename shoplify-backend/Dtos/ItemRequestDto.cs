@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace shoplify_backend.Dtos;
 
-public record class UpdateItemRequestDto(
+public record class ItemRequestDto(
     [Required] [StringLength(100, MinimumLength = 3)] string Name,
     [Required] [StringLength(20)] string Type,
     [Required]

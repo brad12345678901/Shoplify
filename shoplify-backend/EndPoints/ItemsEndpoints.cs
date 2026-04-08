@@ -1,116 +1,176 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using shoplify_backend.Data;
 using shoplify_backend.Dtos;
+using shoplify_backend.Models;
 
 namespace shoplify_backend.EndPoints;
 
 public static class ItemsEndpoints
 {
-    const string GetItemEndpointName = "GetItem";
-    private static readonly List<ItemDto> items =
-    [
-        new(
-            1,
-            "Acer",
-            "Computer",
-            "Acer PC, 5060 RTX, 32GB RAM 5000MHZ",
-            101999.99M,
-            10,
-            new DateOnly()
-        ),
-        new(
-            2,
-            "Asus",
-            "Laptop",
-            "Asus Laptop, 9060 XT, 16GB RAM 5000MHZ",
-            89999.99M,
-            10,
-            new DateOnly()
-        ),
-        new(
-            3,
-            "MSI",
-            "Computer",
-            "MSI Laptop, 4080 RTX, 32GB RAM 4000MHZ",
-            69999.99M,
-            10,
-            new DateOnly()
-        ),
-    ];
-
     public static void MapItemsEndPoint(this WebApplication app)
     {
         var group = app.MapGroup("/items");
 
+        const string GetItemEndpoint = "GetItem";
+
         //GET All Items
-        group.MapGet("/", () => items);
+        group.MapGet(
+            "/",
+            async (ShoplifyContext db) =>
+            {
+                var items = await db.Items.Where(item => item.Deleted_At == null).ToListAsync();
+
+                var response = new
+                {
+                    success = true,
+                    message = "Items fetched Successfully",
+                    items,
+                };
+
+                return Results.Ok(response);
+            }
+        );
 
         //GET Specific Item
         group
             .MapGet(
                 "/{id:int}",
-                (int id) =>
+                async (int id, ShoplifyContext db) =>
                 {
-                    var item = items.Find(item => item.Id == id);
+                    var item = await db.Items.FindAsync(id);
 
-                    return item is null ? Results.NotFound() : Results.Ok(item);
+                    bool itemIsEmpty = item is null;
+
+                    var response = new
+                    {
+                        success = !itemIsEmpty,
+                        message = itemIsEmpty
+                            ? $"Item ID {id} was not found"
+                            : $"Item ID {id} fetched successfully",
+                        item,
+                    };
+
+                    return Results.Json(response, statusCode: item is null ? 404 : 201);
                 }
             )
-            .WithName(GetItemEndpointName);
+            .WithName(GetItemEndpoint);
 
         //Create Item
         group.MapPost(
             "/",
-            (CreateItemDto createItem) =>
+            async (ItemRequestDto createdItem, ShoplifyContext db) =>
             {
-                DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
-                ItemDto item = new(
-                    items.Count + 1,
-                    createItem.Name,
-                    createItem.Type,
-                    createItem.Description,
-                    createItem.Price,
-                    createItem.Stock,
-                    today
+                DateTime today = DateTime.UtcNow;
+                var existingCategory = await db.Category.AnyAsync(c =>
+                    c.Id == createdItem.CategoryId
                 );
-                items.Add(item);
-                return Results.CreatedAtRoute(GetItemEndpointName, new { id = item.Id }, item);
+                if (!existingCategory)
+                {
+                    return Results.BadRequest(
+                        new
+                        {
+                            success = false,
+                            message = $"Category ID {createdItem.CategoryId} do not exist",
+                            data = (Item?)null,
+                        }
+                    );
+                }
+                Item item = new()
+                {
+                    Name = createdItem.Name,
+                    Type = createdItem.Type,
+                    CategoryId = createdItem.CategoryId,
+                    Description = createdItem.Description,
+                    Price = createdItem.Price,
+                    Stock = createdItem.Stock,
+                };
+                db.Items.Add(item);
+                db.SaveChanges();
+
+                return Results.Created(
+                    GetItemEndpoint,
+                    new
+                    {
+                        success = true,
+                        message = "Item added to Shoplify Inventory",
+                        data = item,
+                    }
+                );
             }
         );
 
         //Update Function
         group.MapPut(
             "/{id:int}",
-            (int id, UpdateItemDto updateItem) =>
+            async (int id, ItemRequestDto updateItem, ShoplifyContext db) =>
             {
-                var index = items.FindIndex(item => item.Id == id);
-
-                if (index == -1)
+                var existingItem = await db.Items.FindAsync(id);
+                DateTime today = DateTime.UtcNow;
+                if (existingItem is null)
                 {
-                    return Results.NotFound();
+                    return Results.NotFound(
+                        new
+                        {
+                            success = false,
+                            message = $"Item ID {id} do not exist",
+                            data = (Item?)null,
+                        }
+                    );
                 }
 
-                DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
-                items[index] = new ItemDto(
-                    id,
-                    updateItem.Name,
-                    updateItem.Type,
-                    updateItem.Description,
-                    updateItem.Price,
-                    updateItem.Stock,
-                    today
-                );
+                existingItem.Name = updateItem.Name;
+                existingItem.Type = updateItem.Type;
+                existingItem.CategoryId = updateItem.CategoryId;
+                existingItem.Description = updateItem.Description;
+                existingItem.Price = updateItem.Price;
+                existingItem.Stock = updateItem.Stock;
+                existingItem.Updated_At = today;
 
-                return Results.NoContent();
+                await db.SaveChangesAsync();
+
+                return Results.Ok(
+                    new
+                    {
+                        success = true,
+                        message = $"Item ID {id} was updated",
+                        data = existingItem,
+                    }
+                );
             }
         );
 
         //DELETE Function
         group.MapDelete(
             "/{id:int}",
-            (int id) =>
+            async (int id, ShoplifyContext db) =>
             {
-                items.RemoveAll(item => item.Id == id);
+                var existingItem = await db.Items.FindAsync(id);
+                DateTime today = DateTime.UtcNow;
+                if (existingItem is null)
+                {
+                    return Results.NotFound(
+                        new
+                        {
+                            success = false,
+                            message = $"Item ID {id} do not exist",
+                            data = (Item?)null,
+                        }
+                    );
+                }
 
-                return Results.NoContent();
+                existingItem.Deleted_At = today;
+
+                await db.SaveChangesAsync();
+
+                return Results.Ok(
+                    new
+                    {
+                        success = true,
+                        message = $"Item ID {id} was deleted successfully",
+                        data = existingItem,
+                    }
+                );
             }
         );
     }

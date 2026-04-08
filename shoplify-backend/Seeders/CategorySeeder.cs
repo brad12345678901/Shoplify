@@ -10,7 +10,16 @@ public class CategorySeeder : ISeeder
     {
         try
         {
-            var categories = new Category[] { new() { Name = "Laptop" } };
+            var categories = new Category[]
+            {
+                new() { Name = "Laptops & Computers" },
+                new() { Name = "Mobiles & Gadgets" },
+                new() { Name = "Men's Apparel" },
+                new() { Name = "Women's Apparel" },
+                new() { Name = "Mobile Accessories" },
+                new() { Name = "Appliances" },
+                new() { Name = "Tools" },
+            };
             context.Category.AddRange(categories);
             context.SaveChanges();
             return true;

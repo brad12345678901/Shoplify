@@ -6,8 +6,9 @@ public record class ItemDto(
     int Id,
     string Name,
     string Type,
+    int CategoryId,
     string Description,
     decimal Price,
     int Stock,
-    DateOnly Created_at
+    DateTime Created_at
 );
