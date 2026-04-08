@@ -14,12 +14,6 @@ builder.Services.AddValidation();
 
 var app = builder.Build();
 
-//AUTO MIGRATE
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<ShoplifyContext>();
-    context.Database.Migrate();
-}
 //Seeder
 if (args.Contains("--seed"))
 {
@@ -36,13 +30,20 @@ if (args.Contains("--seed"))
         }
 
         var context = scope.ServiceProvider.GetRequiredService<ShoplifyContext>();
-        DBMasterSeeder.RunSeeders(context, targetSeeder);
+        await DBMasterSeeder.RunSeeders(context, targetSeeder);
     }
     catch (Exception err)
     {
         Console.WriteLine($"Error: {err}");
     }
     return;
+}
+
+//AUTO MIGRATE
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ShoplifyContext>();
+    context.Database.Migrate();
 }
 
 //API

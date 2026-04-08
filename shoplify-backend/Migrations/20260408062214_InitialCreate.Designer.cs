@@ -11,7 +11,7 @@ using shoplify_backend.Data;
 namespace shoplify_backend.Migrations
 {
     [DbContext(typeof(ShoplifyContext))]
-    [Migration("20260407074619_InitialCreate")]
+    [Migration("20260408062214_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

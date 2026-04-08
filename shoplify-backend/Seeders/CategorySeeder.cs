@@ -1,3 +1,4 @@
+using System.Data.SqlTypes;
 using shoplify_backend.Data;
 using shoplify_backend.Models;
 
@@ -5,18 +6,19 @@ namespace shoplify_backend.Seeders;
 
 public class CategorySeeder : ISeeder
 {
-    public void Seed(ShoplifyContext context)
+    public bool Seed(ShoplifyContext context)
     {
         try
         {
-            context.Database.EnsureCreated();
             var categories = new Category[] { new() { Name = "Laptop" } };
             context.Category.AddRange(categories);
             context.SaveChanges();
+            return true;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error:{ex}");
+            return false;
         }
     }
 }

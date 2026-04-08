@@ -4,5 +4,5 @@ namespace shoplify_backend.Seeders;
 
 public interface ISeeder
 {
-    void Seed(ShoplifyContext context);
+    bool Seed(ShoplifyContext context);
 }
