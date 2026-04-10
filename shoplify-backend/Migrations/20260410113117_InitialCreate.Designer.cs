@@ -12,8 +12,8 @@ using shoplify_backend.Data;
 namespace shoplify_backend.Migrations
 {
     [DbContext(typeof(ShoplifyContext))]
-    [Migration("20260408104404_InitializeCreate")]
-    partial class InitializeCreate
+    [Migration("20260410113117_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,7 +51,7 @@ namespace shoplify_backend.Migrations
                     b.ToTable("Category");
                 });
 
-            modelBuilder.Entity("shoplify_backend.Models.Item", b =>
+            modelBuilder.Entity("shoplify_backend.Models.Products", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -93,10 +93,10 @@ namespace shoplify_backend.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Items");
+                    b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("shoplify_backend.Models.Item", b =>
+            modelBuilder.Entity("shoplify_backend.Models.Products", b =>
                 {
                     b.HasOne("shoplify_backend.Models.Category", "Category")
                         .WithMany()

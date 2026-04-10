@@ -15,13 +15,15 @@ public class ItemsController(ShoplifyContext db) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var items = await _db.Items.Where(item => item.Deleted_At == null).ToListAsync();
+        var products = await _db
+            .Products.Where(product => product.Deleted_At == null)
+            .ToListAsync();
 
         var response = new
         {
             success = true,
             message = "Items fetched Successfully",
-            items,
+            products,
         };
 
         return Ok(response);
@@ -30,28 +32,28 @@ public class ItemsController(ShoplifyContext db) : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetItem(int id)
     {
-        var item = await _db.Items.FindAsync(id);
+        var product = await _db.Products.FindAsync(id);
 
-        if (item is null)
+        if (product is null)
         {
             return NotFound(
                 new
                 {
                     success = false,
                     message = $"Item {id} was not found",
-                    item,
+                    product,
                 }
             );
         }
 
-        if (item.Deleted_At is not null)
+        if (product.Deleted_At is not null)
         {
             return NotFound(
                 new
                 {
                     success = false,
                     message = $"Item {id} was not found",
-                    item = (Item?)null,
+                    product = (Products?)null,
                 }
             );
         }
@@ -61,13 +63,13 @@ public class ItemsController(ShoplifyContext db) : ControllerBase
             {
                 success = true,
                 message = $"Item {id} was fetched Successfully",
-                item,
+                product,
             }
         );
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddItem(ItemRequestDto createdItem)
+    public async Task<IActionResult> AddItem(ProductRequestDto createdItem)
     {
         DateTime today = DateTime.UtcNow;
 
@@ -79,11 +81,11 @@ public class ItemsController(ShoplifyContext db) : ControllerBase
                 {
                     success = false,
                     message = $"Category ID {createdItem.CategoryId} do not exist",
-                    data = (Item?)null,
+                    data = (Products?)null,
                 }
             );
         }
-        Item item = new()
+        Products item = new()
         {
             Name = createdItem.Name,
             Type = createdItem.Type,
@@ -92,7 +94,7 @@ public class ItemsController(ShoplifyContext db) : ControllerBase
             Price = createdItem.Price,
             Stock = createdItem.Stock,
         };
-        _db.Items.Add(item);
+        _db.Products.Add(item);
         _db.SaveChanges();
 
         var response = new
@@ -106,29 +108,29 @@ public class ItemsController(ShoplifyContext db) : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateItem(int id, ItemRequestDto updateItem)
+    public async Task<IActionResult> UpdateItem(int id, ProductRequestDto updateProduct)
     {
-        var existingItem = await _db.Items.FindAsync(id);
+        var existingProduct = await _db.Products.FindAsync(id);
         DateTime today = DateTime.UtcNow;
-        if (existingItem is null)
+        if (existingProduct is null)
         {
             return NotFound(
                 new
                 {
                     success = false,
                     message = $"Item ID {id} do not exist",
-                    data = (Item?)null,
+                    data = (Products?)null,
                 }
             );
         }
 
-        existingItem.Name = updateItem.Name;
-        existingItem.Type = updateItem.Type;
-        existingItem.CategoryId = updateItem.CategoryId;
-        existingItem.Description = updateItem.Description;
-        existingItem.Price = updateItem.Price;
-        existingItem.Stock = updateItem.Stock;
-        existingItem.Updated_At = today;
+        existingProduct.Name = updateProduct.Name;
+        existingProduct.Type = updateProduct.Type;
+        existingProduct.CategoryId = updateProduct.CategoryId;
+        existingProduct.Description = updateProduct.Description;
+        existingProduct.Price = updateProduct.Price;
+        existingProduct.Stock = updateProduct.Stock;
+        existingProduct.Updated_At = today;
 
         await _db.SaveChangesAsync();
 
@@ -136,8 +138,8 @@ public class ItemsController(ShoplifyContext db) : ControllerBase
             new
             {
                 success = true,
-                message = $"Item ID {id} was updated",
-                data = existingItem,
+                message = $"Product ID {id} was updated",
+                data = existingProduct,
             }
         );
     }
@@ -145,31 +147,31 @@ public class ItemsController(ShoplifyContext db) : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteItem(int id)
     {
-        var existingItem = await _db.Items.FindAsync(id);
+        var existingProduct = await _db.Products.FindAsync(id);
         DateTime today = DateTime.UtcNow;
-        if (existingItem is null)
+        if (existingProduct is null)
         {
             return NotFound(
                 new
                 {
                     success = false,
-                    message = $"Item ID {id} do not exist",
-                    data = (Item?)null,
+                    message = $"Product ID {id} do not exist",
+                    data = (Products?)null,
                 }
             );
         }
 
-        if (existingItem.Deleted_At is not null)
+        if (existingProduct.Deleted_At is not null)
             return NotFound(
                 new
                 {
                     success = false,
-                    message = $"Item do not exist or already deleted",
-                    data = (Item?)null,
+                    message = $"Product do not exist or already deleted",
+                    data = (Products?)null,
                 }
             );
 
-        existingItem.Deleted_At = today;
+        existingProduct.Deleted_At = today;
 
         await _db.SaveChangesAsync();
 
@@ -178,7 +180,7 @@ public class ItemsController(ShoplifyContext db) : ControllerBase
             {
                 success = true,
                 message = $"Item ID {id} was deleted successfully",
-                data = existingItem,
+                data = existingProduct,
             }
         );
     }

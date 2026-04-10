@@ -7,7 +7,7 @@ namespace shoplify_backend.Data;
 //Where you can do query operations onto the database
 public class ShoplifyContext(DbContextOptions<ShoplifyContext> options) : DbContext(options)
 {
-    public DbSet<Item> Items => Set<Item>();
+    public DbSet<Products> Products => Set<Products>();
 
     public DbSet<Category> Category => Set<Category>();
 }

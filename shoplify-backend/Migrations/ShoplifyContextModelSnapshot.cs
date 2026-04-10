@@ -48,7 +48,7 @@ namespace shoplify_backend.Migrations
                     b.ToTable("Category");
                 });
 
-            modelBuilder.Entity("shoplify_backend.Models.Item", b =>
+            modelBuilder.Entity("shoplify_backend.Models.Products", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -90,10 +90,10 @@ namespace shoplify_backend.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Items");
+                    b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("shoplify_backend.Models.Item", b =>
+            modelBuilder.Entity("shoplify_backend.Models.Products", b =>
                 {
                     b.HasOne("shoplify_backend.Models.Category", "Category")
                         .WithMany()

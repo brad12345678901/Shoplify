@@ -1,6 +1,6 @@
 namespace shoplify_backend.Models;
 
-public class Item
+public class Products
 {
     public int Id { get; set; }
 

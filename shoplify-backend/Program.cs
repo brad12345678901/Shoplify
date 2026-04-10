@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using shoplify_backend.Data;
-using shoplify_backend.EndPoints;
 using shoplify_backend.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,35 +45,6 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<ShoplifyContext>();
     context.Database.Migrate();
 }
-
-//API
-app.MapGet(
-    "/testrun",
-    async (ShoplifyContext context) =>
-    {
-        try
-        {
-            // Check if the database is reachable
-            bool canConnect = await context.Database.CanConnectAsync();
-
-            if (canConnect)
-            {
-                // Try a simple query to ensure the schema is correct
-                var itemCount = await context.Items.CountAsync();
-
-                // In Minimal APIs, use Results.Ok instead of return Ok
-                return Results.Ok();
-            }
-
-            return Results.StatusCode(500);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-            return Results.BadRequest($"Error: {ex.Message}");
-        }
-    }
-);
 
 // app.MapItemsEndPoint();
 app.MapControllers();
