@@ -11,6 +11,7 @@ builder.Services.AddDbContext<ShoplifyContext>(options =>
 );
 
 builder.Services.AddValidation();
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -62,9 +63,7 @@ app.MapGet(
                 var itemCount = await context.Items.CountAsync();
 
                 // In Minimal APIs, use Results.Ok instead of return Ok
-                return Results.Ok(
-                    new { Message = "Connection Successful!", TotalItems = itemCount }
-                );
+                return Results.Ok();
             }
 
             return Results.StatusCode(500);
@@ -77,6 +76,7 @@ app.MapGet(
     }
 );
 
-app.MapItemsEndPoint();
+// app.MapItemsEndPoint();
+app.MapControllers();
 
 app.Run();

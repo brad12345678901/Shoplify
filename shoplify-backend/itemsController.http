@@ -1,0 +1,40 @@
+@hostname = localhost
+@port = 5154
+@baseUrl = http://{{hostname}}:{{port}}/api
+
+### GET ITEMS
+GET {{baseUrl}}/items
+
+
+### GET ITEM
+GET {{baseUrl}}/items/3
+
+
+### Create Item
+POST {{baseUrl}}/items
+Content-Type: application/json
+
+{
+    "Name": "Item 4",
+    "Type": "Item Type 4",
+    "CategoryId": 1,
+    "Description": "Sample Item 4",
+    "Price": 12.99,
+    "Stock": 3
+}
+
+### Update Item
+PUT {{baseUrl}}/items/1
+Content-Type: application/json
+
+{
+    "Name": "Item 3",
+    "Type": "Item Type 3",
+    "CategoryId": 1,
+    "Description": "Sample Item 3",
+    "Price": 12.99,
+    "Stock": 3
+}
+
+### DELETE ITEM
+DELETE {{baseUrl}}/items/1
