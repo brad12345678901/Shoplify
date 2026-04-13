@@ -3,15 +3,15 @@
 @baseUrl = http://{{hostname}}:{{port}}/api
 
 ### GET ITEMS
-GET {{baseUrl}}/items
+GET {{baseUrl}}/products
 
 
 ### GET ITEM
-GET {{baseUrl}}/items/3
+GET {{baseUrl}}/products/3
 
 
 ### Create Item
-POST {{baseUrl}}/items
+POST {{baseUrl}}/products
 Content-Type: application/json
 
 {
@@ -24,7 +24,7 @@ Content-Type: application/json
 }
 
 ### Update Item
-PUT {{baseUrl}}/items/1
+PUT {{baseUrl}}/products/1
 Content-Type: application/json
 
 {
@@ -37,4 +37,4 @@ Content-Type: application/json
 }
 
 ### DELETE ITEM
-DELETE {{baseUrl}}/items/1
+DELETE {{baseUrl}}/products/1

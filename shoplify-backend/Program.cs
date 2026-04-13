@@ -9,6 +9,19 @@ builder.Services.AddDbContext<ShoplifyContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("shoplify-be"))
 );
 
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        "AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins(allowedOrigins!).AllowAnyHeader().AllowAnyMethod();
+        }
+    );
+});
+
 builder.Services.AddValidation();
 builder.Services.AddControllers();
 
@@ -45,6 +58,8 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<ShoplifyContext>();
     context.Database.Migrate();
 }
+
+app.UseCors("AllowFrontend");
 
 // app.MapItemsEndPoint();
 app.MapControllers();

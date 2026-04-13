@@ -8,8 +8,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchProducts()
-  }, [])
-
+  }, []);
 
   console.log(products);
   return (

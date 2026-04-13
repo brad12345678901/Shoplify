@@ -8,7 +8,7 @@ namespace shoplify_backend.Controllers;
 
 [ApiController]
 [Route("/api/[controller]")]
-public class ItemsController(ShoplifyContext db) : ControllerBase
+public class ProductsController(ShoplifyContext db) : ControllerBase
 {
     private readonly ShoplifyContext _db = db;
 
@@ -17,13 +17,25 @@ public class ItemsController(ShoplifyContext db) : ControllerBase
     {
         var products = await _db
             .Products.Where(product => product.Deleted_At == null)
+            .Include(p => p.Category)
+            .Select(p => new ProductDto(
+                p.Id,
+                p.Name,
+                p.Type,
+                p.Description,
+                p.Price,
+                p.Stock,
+                p.CategoryId,
+                p.Category != null ? p.Category.Name : string.Empty,
+                p.Created_At.ToString("MMM dd, yyyy")
+            ))
             .ToListAsync();
 
         var response = new
         {
             success = true,
-            message = "Items fetched Successfully",
-            products,
+            message = "Product fetched Successfully",
+            data = products,
         };
 
         return Ok(response);
@@ -40,8 +52,8 @@ public class ItemsController(ShoplifyContext db) : ControllerBase
                 new
                 {
                     success = false,
-                    message = $"Item {id} was not found",
-                    product,
+                    message = $"Product {id} was not found",
+                    data = product,
                 }
             );
         }
@@ -52,8 +64,8 @@ public class ItemsController(ShoplifyContext db) : ControllerBase
                 new
                 {
                     success = false,
-                    message = $"Item {id} was not found",
-                    product = (Products?)null,
+                    message = $"Product {id} was not found",
+                    data = (Products?)null,
                 }
             );
         }
@@ -62,8 +74,8 @@ public class ItemsController(ShoplifyContext db) : ControllerBase
             new
             {
                 success = true,
-                message = $"Item {id} was fetched Successfully",
-                product,
+                message = $"Product {id} was fetched Successfully",
+                data = product,
             }
         );
     }
@@ -100,7 +112,7 @@ public class ItemsController(ShoplifyContext db) : ControllerBase
         var response = new
         {
             success = true,
-            message = "Item added to Shoplify Inventory",
+            message = "Product added to Shoplify Inventory",
             data = item,
         };
 
@@ -118,7 +130,7 @@ public class ItemsController(ShoplifyContext db) : ControllerBase
                 new
                 {
                     success = false,
-                    message = $"Item ID {id} do not exist",
+                    message = $"Product ID {id} do not exist",
                     data = (Products?)null,
                 }
             );
@@ -179,7 +191,7 @@ public class ItemsController(ShoplifyContext db) : ControllerBase
             new
             {
                 success = true,
-                message = $"Item ID {id} was deleted successfully",
+                message = $"Product ID {id} was deleted successfully",
                 data = existingProduct,
             }
         );
