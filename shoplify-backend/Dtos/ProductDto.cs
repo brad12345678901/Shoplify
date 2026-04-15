@@ -12,5 +12,6 @@ public record class ProductDto(
     int Stock,
     int CategoryId,
     string CategoryName,
-    string Created_at
+    string Created_at,
+    string Updated_at
 );

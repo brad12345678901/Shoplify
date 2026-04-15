@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using shoplify_backend.Data;
@@ -11,9 +12,11 @@ using shoplify_backend.Data;
 namespace shoplify_backend.Migrations
 {
     [DbContext(typeof(ShoplifyContext))]
-    partial class ShoplifyContextModelSnapshot : ModelSnapshot
+    [Migration("20260415142631_add_product_image_table")]
+    partial class add_product_image_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

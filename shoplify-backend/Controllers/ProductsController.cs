@@ -27,8 +27,10 @@ public class ProductsController(ShoplifyContext db) : ControllerBase
                 p.Stock,
                 p.CategoryId,
                 p.Category != null ? p.Category.Name : string.Empty,
-                p.Created_At.ToString("MMM dd, yyyy")
+                p.Created_At.ToString("MMM dd, yyyy"),
+                p.Updated_At.ToString("MMM dd, yyyy")
             ))
+            .Take(10)
             .ToListAsync();
 
         var response = new
@@ -196,4 +198,10 @@ public class ProductsController(ShoplifyContext db) : ControllerBase
             }
         );
     }
+
+    // [HttpPost("uploadPicture")]
+    // public async Task<IActionResult> UploadFile(IFormFile file)
+    // {
+        
+    // }
 }

@@ -10,4 +10,6 @@ public class ShoplifyContext(DbContextOptions<ShoplifyContext> options) : DbCont
     public DbSet<Products> Products => Set<Products>();
 
     public DbSet<Category> Category => Set<Category>();
+
+    public DbSet<ProductImage> ProductImage => Set<ProductImage>();
 }

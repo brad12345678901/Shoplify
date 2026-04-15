@@ -63,5 +63,6 @@ app.UseCors("AllowFrontend");
 
 // app.MapItemsEndPoint();
 app.MapControllers();
+// app.UseStaticFiles();
 
 app.Run();
