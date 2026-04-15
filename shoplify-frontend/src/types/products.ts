@@ -1,14 +1,14 @@
 import type { Category } from "./category"
 
 export interface Products {
-    Id: number,
-    Name: string,
-    Type: string,
-    CategoryId: number,
-    Category?: Category,
-    Description: string,
-    Price: number,
-    Stock: number
-    Created_At: string,
-    Updated_At: string
+    id: number,
+    name: string,
+    type: string,
+    categoryid: number,
+    category?: Category,
+    description: string,
+    price: number,
+    stock: number
+    created_at: string,
+    updated_at: string
 }
