@@ -38,3 +38,6 @@ Content-Type: application/json
 
 ### DELETE ITEM
 DELETE {{baseUrl}}/products/1
+
+### GET CATEGORIES
+GET {{baseUrl}}/categories
