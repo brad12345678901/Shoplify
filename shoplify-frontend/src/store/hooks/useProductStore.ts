@@ -1,5 +1,5 @@
 import { fetchProductsApi } from "../services/productService"
-import { useProductStore } from "../store/useProductStore"
+import { useProductStore } from "../../store/useProductStore"
 
 export const useProducts = () => {
     const products = useProductStore((state) => state.products)
@@ -8,6 +8,7 @@ export const useProducts = () => {
     const submit_loading = useProductStore((state) => state.submit_loading)
     const setProducts = useProductStore((state) => state.setProducts)
     const setProductsForm = useProductStore((state) => state.setProductsForm)
+    const resetProductsForm = useProductStore((state) => state.resetProductsForm)
 
     const fetchProducts = async () => {
         try {
@@ -21,5 +22,5 @@ export const useProducts = () => {
         }
     }
 
-    return { products, productsForm, loading, submit_loading, fetchProducts, setProductsForm }
+    return { products, productsForm, loading, submit_loading, fetchProducts, setProductsForm, resetProductsForm }
 }

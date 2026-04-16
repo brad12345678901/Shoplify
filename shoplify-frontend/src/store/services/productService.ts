@@ -1,4 +1,4 @@
-import { API } from "../store/utils"
+import { API } from "../../store/utils"
 
 export const fetchProductsApi = async () => {
     const res = await API.get("/products")

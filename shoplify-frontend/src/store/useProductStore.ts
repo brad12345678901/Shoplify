@@ -9,6 +9,7 @@ interface ProductStore {
     submit_loading: boolean,
     setProducts: (products: Products[]) => void,
     setProductsForm: (name: string, value: any) => void,
+    resetProductsForm: () => void,
 }
 
 const initialState = {
@@ -19,7 +20,8 @@ const initialState = {
         categoryid: 0,
         description: "",
         price: 0,
-        stock: 0
+        stock: 0,
+        file: undefined,
     }
 }
 
@@ -35,4 +37,7 @@ export const useProductStore = create<ProductStore>((set) => ({
             [name]: value,
         }
     })),
+    resetProductsForm: () => set(() => ({
+        productsForm: initialState.productForm
+    }))
 }))

@@ -9,12 +9,22 @@ type FormInputTypes = {
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
+  inputRef?: React.Ref<HTMLInputElement | HTMLTextAreaElement>;
   inputClassName?: string;
   label?: string;
+  accept?: string;
   labelClassName?: string;
 };
 
 export default function FormInput(props: FormInputTypes) {
+  if (props.type === "file")
+    return (
+      <>
+        <div className = "p-2 border-2 border-red-500 text-red-500 place-items-center">
+          <p>ERROR: USE <code>FormFileInput.tsx</code> INSTEAD!</p>
+        </div>
+      </>
+    );
   if (props.type != "textarea")
     return (
       <>
@@ -32,6 +42,8 @@ export default function FormInput(props: FormInputTypes) {
             name={props.name}
             id={props.id}
             placeholder={props.placeholder}
+            ref={props.inputRef as React.Ref<HTMLInputElement>}
+            accept={props.accept}
             onChange={props.onChange}
           />
         </div>
@@ -52,6 +64,7 @@ export default function FormInput(props: FormInputTypes) {
             value={props.value}
             id={props.id}
             name={props.name}
+            ref={props.inputRef as React.Ref<HTMLTextAreaElement>}
             placeholder={props.placeholder}
             onChange={props.onChange}
           />

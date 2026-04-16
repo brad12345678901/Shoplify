@@ -1,9 +1,10 @@
 import NavigationHeader from "../components/Header";
 import { useEffect, useState } from "react";
-import { useProducts } from "../hooks/useProductStore";
+import { useProducts } from "../store/hooks/useProductStore";
 import ProductBox from "../components/ProductBox";
 import DebugAddProductModal from "../components/modals/DebugAddProduct";
 import FormInput from "../components/FormInput";
+import DebugAddPictureModal from "../components/modals/DebugAddPictureModal";
 
 export default function Dashboard() {
   const { products, fetchProducts } = useProducts();
@@ -12,6 +13,8 @@ export default function Dashboard() {
 
   const [debugShowModal, setdebugShowModal] = useState(false);
 
+  const [debugCropperModal, setDebugCropperModal] = useState(false);
+
   useEffect(() => {
     fetchProducts();
     setShow(true);
@@ -19,8 +22,10 @@ export default function Dashboard() {
 
   return (
     <>
-      <DebugAddProductModal show={debugShowModal} />
-      <button onClick={() => {setdebugShowModal(true)}}>CLICK ME</button>
+      <DebugAddProductModal show={debugShowModal} onClose={() => {setdebugShowModal(false)}}/>
+      <DebugAddPictureModal show={debugCropperModal} onClose={() => {setDebugCropperModal(false)}}/>
+      <button className="cursor-pointer" onClick={() => {setdebugShowModal(true)}}>CLICK ME</button>
+      <button className="cursor-pointer" onClick={() => {setDebugCropperModal(true)}}>FOR CROPPER ME</button>
       <NavigationHeader />
       <section id="Hero">
         <div className="custom_section_1 pt-100 pb-40 px-20 h-300">

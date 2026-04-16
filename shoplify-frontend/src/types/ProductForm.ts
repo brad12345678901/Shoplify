@@ -4,5 +4,6 @@ export type ProductForm = {
     categoryid: number,
     description: string,
     price: number,
-    stock: number
+    stock: number,
+    file: File | undefined,
 }
