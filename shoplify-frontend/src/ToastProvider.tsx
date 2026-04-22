@@ -48,13 +48,13 @@ export default function ToastProvider({ children }: { children: ReactNode }) {
 
   // Convenience methods
   const toast = {
-    success: (title: string, message: string, duration: number) =>
+    success: (title: string, message: string, duration?: number) =>
       add({ type: "success", title, message, duration }),
-    error: (title: string, message: string, duration: number) =>
+    error: (title: string, message: string, duration?: number) =>
       add({ type: "error", title, message, duration }),
-    warning: (title: string, message: string, duration: number) =>
+    warning: (title: string, message: string, duration?: number) =>
       add({ type: "warning", title, message, duration }),
-    info: (title: string, message: string, duration: number) =>
+    info: (title: string, message: string, duration?: number) =>
       add({ type: "info", title, message, duration }),
   };
 
