@@ -24,9 +24,22 @@ export default function FormPictureInput(props: FormInputTypes) {
   const [getCropImageLoading, setGetCropImageLoading] =
     useState<boolean>(false);
 
+  const defaultTypes = "image/jpeg, image/png";
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const allowedTypes = props.accept
+      ? props.accept.split(",").map((s) => s.trim())
+      : defaultTypes.split(",").map((s) => s.trim());
+
+    if (!allowedTypes.includes(file.type)) {
+      alert("File is not an acceptable type");
+      e.target.value = "";
+      return;
+    }
+
     const preview = URL.createObjectURL(file);
     setImageSrc(preview);
     setShowCrop(true);
@@ -47,13 +60,6 @@ export default function FormPictureInput(props: FormInputTypes) {
     const blob = await getCroppedImg(imageSrc, croppedAreaPixels);
     setGetCropImageLoading(false);
     setCroppedBlob(blob);
-    if (
-      props.inputRef &&
-      "current" in props.inputRef &&
-      props.inputRef.current
-    ) {
-      props.inputRef.current.value = "";
-    }
   };
 
   return (
@@ -87,13 +93,20 @@ export default function FormPictureInput(props: FormInputTypes) {
           id={props.id}
           placeholder={props.placeholder}
           ref={props.inputRef as React.Ref<HTMLInputElement>}
-          accept={props.accept ? props.accept : "image/jpeg, image/png"}
+          accept={props.accept ? props.accept : defaultTypes}
           onChange={handleFileChange}
         />
       </div>
       <ImageCropper
         show={showCrop}
         onClose={() => {
+          if (
+            props.inputRef &&
+            "current" in props.inputRef &&
+            props.inputRef.current
+          ) {
+            props.inputRef.current.value = "";
+          }
           setShowCrop(false);
         }}
         image={imageSrc}

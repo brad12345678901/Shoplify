@@ -3,7 +3,6 @@ import { useProducts } from "../../store/hooks/useProductStore";
 import FormInput from "../FormInput";
 import FormSelector from "../FormSelector";
 import Button from "../Button";
-import FormFileInput from "../FormFileInput";
 import FormPictureInput from "../FormPictureInput";
 
 type DebugAddProductModalProps = {

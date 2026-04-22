@@ -3,17 +3,13 @@ import { useEffect, useState } from "react";
 import { useProducts } from "../store/hooks/useProductStore";
 import ProductBox from "../components/ProductBox";
 import DebugAddProductModal from "../components/modals/DebugAddProduct";
-import FormInput from "../components/FormInput";
-import DebugAddPictureModal from "../components/modals/DebugAddPictureModal";
+import { useToast } from "../ToastProvider";
 
 export default function Dashboard() {
   const { products, fetchProducts } = useProducts();
-
+  const toast = useToast();
   const [show, setShow] = useState(false);
-
   const [debugShowModal, setdebugShowModal] = useState(false);
-
-  const [debugCropperModal, setDebugCropperModal] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -22,10 +18,21 @@ export default function Dashboard() {
 
   return (
     <>
-      <DebugAddProductModal show={debugShowModal} onClose={() => {setdebugShowModal(false)}}/>
-      <DebugAddPictureModal show={debugCropperModal} onClose={() => {setDebugCropperModal(false)}}/>
-      <button className="cursor-pointer" onClick={() => {setdebugShowModal(true)}}>CLICK ME</button>
-      <button className="cursor-pointer" onClick={() => {setDebugCropperModal(true)}}>FOR CROPPER ME</button>
+      <DebugAddProductModal
+        show={debugShowModal}
+        onClose={() => {
+          setdebugShowModal(false);
+          toast.success("Yes", "Yes");
+        }}
+      />
+      <button
+        className="cursor-pointer"
+        onClick={() => {
+          setdebugShowModal(true);
+        }}
+      >
+        CLICK ME
+      </button>
       <NavigationHeader />
       <section id="Hero">
         <div className="custom_section_1 pt-100 pb-40 px-20 h-300">

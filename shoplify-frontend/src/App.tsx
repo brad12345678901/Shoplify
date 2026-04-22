@@ -1,16 +1,17 @@
-import { useState } from 'react'
-import { Routes, Route } from 'react-router-dom'
-import './App.css'
-import Dashboard from './pages/Dashboard'
+import { useState } from "react";
+import { useToast } from "./ToastProvider";
+import { Routes, Route } from "react-router-dom";
+import "./App.css";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
-      <>
+    <>
       <Routes>
-        <Route path="/" element = {<Dashboard/>}/>
+        <Route path="/" element={<Dashboard />} />
       </Routes>
-      </>
-  )
+    </>
+  );
 }
 
-export default App
+export default App;
