@@ -4,30 +4,29 @@ using Microsoft.EntityFrameworkCore;
 using shoplify_backend.Data;
 using shoplify_backend.Models;
 
-namespace shoplify_backend.Controllers
+namespace shoplify_backend.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class CategoriesController(ShoplifyContext db) : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class CategoriesController(ShoplifyContext db) : ControllerBase
+    private readonly ShoplifyContext _db = db;
+
+    [HttpGet]
+    public async Task<IActionResult> Index()
     {
-        private readonly ShoplifyContext _db = db;
+        var categories = await _db
+            .Category.Where(category => category.Deleted_At == null)
+            .Select(category => new { id = category.Id, category_name = category.Name })
+            .ToListAsync();
 
-        [HttpGet]
-        public async Task<IActionResult> Index()
+        var response = new
         {
-            var categories = await _db
-                .Category.Where(category => category.Deleted_At == null)
-                .Select(category => new { id = category.Id, category_nam = category.Name })
-                .ToListAsync();
+            success = true,
+            message = "Categories fetched Successfully",
+            data = categories,
+        };
 
-            var response = new
-            {
-                success = true,
-                message = "Categories fetched Successfully",
-                data = categories,
-            };
-
-            return Ok(response);
-        }
+        return Ok(response);
     }
 }

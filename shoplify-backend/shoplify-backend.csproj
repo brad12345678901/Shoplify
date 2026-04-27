@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="Interfaces\" />
     <Folder Include="Data\" />
     <Folder Include="Dtos\" />
     <Folder Include="Models\" />

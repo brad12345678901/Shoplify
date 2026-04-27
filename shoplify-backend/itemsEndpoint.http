@@ -1,9 +1,9 @@
 @hostname = localhost
-@port = 5154
+@port = 5000
 @baseUrl = http://{{hostname}}:{{port}}/api
 
 ### GET ITEMS
-GET {{baseUrl}}/products
+GET {{baseUrl}}/products/
 
 
 ### GET ITEM

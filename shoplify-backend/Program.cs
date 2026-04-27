@@ -23,7 +23,12 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddValidation();
-builder.Services.AddControllers();
+builder
+    .Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 
 var app = builder.Build();
 
@@ -61,8 +66,8 @@ using (var scope = app.Services.CreateScope())
 
 app.UseCors("AllowFrontend");
 
-// app.MapItemsEndPoint();
-app.MapControllers();
-// app.UseStaticFiles();
+// var apiGroup = app.MapGroup("/api");
+// apiGroup.MapProductsEndpoint();
 
+app.MapControllers();
 app.Run();

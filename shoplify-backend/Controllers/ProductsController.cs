@@ -30,7 +30,7 @@ public class ProductsController(ShoplifyContext db) : ControllerBase
                 p.Created_At.ToString("MMM dd, yyyy"),
                 p.Updated_At.ToString("MMM dd, yyyy")
             ))
-            .Take(10)
+            .Take(50)
             .ToListAsync();
 
         var response = new
@@ -83,18 +83,18 @@ public class ProductsController(ShoplifyContext db) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddItem(ProductRequestDto createdItem)
+    public async Task<IActionResult> AddItem([FromForm] ProductRequestDto createdItem)
     {
         DateTime today = DateTime.UtcNow;
 
-        var existingCategory = await _db.Category.AnyAsync(c => c.Id == createdItem.CategoryId);
+        var existingCategory = await _db.Category.AnyAsync(c => c.Id == createdItem.Category);
         if (!existingCategory)
         {
             return BadRequest(
                 new
                 {
                     success = false,
-                    message = $"Category ID {createdItem.CategoryId} do not exist",
+                    message = $"Category ID {createdItem.Category} do not exist",
                     data = (Products?)null,
                 }
             );
@@ -103,7 +103,7 @@ public class ProductsController(ShoplifyContext db) : ControllerBase
         {
             Name = createdItem.Name,
             Type = createdItem.Type,
-            CategoryId = createdItem.CategoryId,
+            CategoryId = createdItem.Category,
             Description = createdItem.Description,
             Price = createdItem.Price,
             Stock = createdItem.Stock,
@@ -119,6 +119,7 @@ public class ProductsController(ShoplifyContext db) : ControllerBase
         };
 
         return CreatedAtAction(nameof(GetItem), new { id = item.Id }, response);
+        // return Ok(new { success = true, message = "TEST FILE" });
     }
 
     [HttpPut("{id:int}")]
@@ -140,7 +141,7 @@ public class ProductsController(ShoplifyContext db) : ControllerBase
 
         existingProduct.Name = updateProduct.Name;
         existingProduct.Type = updateProduct.Type;
-        existingProduct.CategoryId = updateProduct.CategoryId;
+        existingProduct.CategoryId = updateProduct.Category;
         existingProduct.Description = updateProduct.Description;
         existingProduct.Price = updateProduct.Price;
         existingProduct.Stock = updateProduct.Stock;
@@ -202,6 +203,6 @@ public class ProductsController(ShoplifyContext db) : ControllerBase
     // [HttpPost("uploadPicture")]
     // public async Task<IActionResult> UploadFile(IFormFile file)
     // {
-        
+
     // }
 }
