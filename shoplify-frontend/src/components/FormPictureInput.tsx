@@ -9,6 +9,7 @@ type FormInputTypes = {
   name: string;
   value?: any;
   placeholder?: string;
+  onChange?: any;
   inputRef: React.Ref<HTMLInputElement | HTMLTextAreaElement>;
   inputClassName?: string;
   label?: string;
@@ -60,6 +61,7 @@ export default function FormPictureInput(props: FormInputTypes) {
     const blob = await getCroppedImg(imageSrc, croppedAreaPixels);
     setGetCropImageLoading(false);
     setCroppedBlob(blob);
+    props.onChange({ target: { name: props.name, value: blob } });
   };
 
   return (

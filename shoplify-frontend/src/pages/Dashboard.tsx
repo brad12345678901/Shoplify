@@ -4,9 +4,11 @@ import { useProducts } from "../store/hooks/useProductStore";
 import ProductBox from "../components/ProductBox";
 import DebugAddProductModal from "../components/modals/DebugAddProduct";
 import { useToast } from "../ToastProvider";
+import { useProductStore } from "../store/useProductStore";
 
 export default function Dashboard() {
-  const { products, fetchProducts } = useProducts();
+  const products = useProductStore((state) => state.products);
+  const { fetchProducts } = useProducts();
   const toast = useToast();
   const [show, setShow] = useState(false);
   const [debugShowModal, setdebugShowModal] = useState(false);

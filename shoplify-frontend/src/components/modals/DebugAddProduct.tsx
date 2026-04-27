@@ -1,9 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useProducts } from "../../store/hooks/useProductStore";
 import FormInput from "../FormInput";
 import FormSelector from "../FormSelector";
 import Button from "../Button";
 import FormPictureInput from "../FormPictureInput";
+import { useShallow } from "zustand/shallow";
+import { useProductStore } from "../../store/useProductStore";
+import { useCategoryStore } from "../../store/useCategoryStore";
+import { useCategory } from "../../store/hooks/useCategoryStore";
 
 type DebugAddProductModalProps = {
   show: boolean;
@@ -14,11 +18,31 @@ export default function DebugAddProductModal({
   show,
   onClose,
 }: DebugAddProductModalProps) {
-  const { productsForm, setProductsForm, resetProductsForm } = useProducts();
+  //PRODUCTS
+  const productsForm = useProductStore((state) => state.productsForm);
+  const { setProductsForm, resetProductsForm, addProducts } = useProducts();
+
+  //CATEGORIES
+  const { categories, category_loading } = useCategoryStore(
+    useShallow((state) => ({
+      categories: state.categories,
+      category_loading: state.loading,
+    })),
+  );
+  const { fetchCategories } = useCategory();
+
   const fileInput = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   const handleFormInput = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | {
+          target: { type: string; name: string; value: any };
+        },
   ) => {
     const { name, value } = e.target;
     setProductsForm(name, value);
@@ -37,8 +61,22 @@ export default function DebugAddProductModal({
     }
   }, [show]);
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log(productsForm);
+    const formData = new FormData();
+
+    Object.entries(productsForm).forEach(([key, value]) => {
+      if (value !== undefined) {
+        if (typeof value === "number") {
+          formData.append(key, value.toString());
+        } else {
+          formData.append(key, value);
+        }
+      }
+    });
+    console.log(productsForm);
+    await addProducts(formData);
     onClose();
   };
 
@@ -62,6 +100,7 @@ export default function DebugAddProductModal({
               name="file"
               id="product_file"
               placeholder="Enter Product File"
+              onChange={handleFormInput}
               label="Product File"
               inputRef={fileInput}
               parentmodalShow={show}
@@ -84,7 +123,18 @@ export default function DebugAddProductModal({
               label="Product Type"
               onChange={handleFormInput}
             />
-            <FormSelector placeholder="Select Category" />
+            <FormSelector
+              name="category"
+              value={productsForm.category}
+              placeholder="Select Category"
+              onChange={handleFormInput}
+              options={categories.map((c) => ({
+                name: c.category_name,
+                value: c.id,
+              }))}
+              optionsLoading={category_loading}
+              parentmodalShow={show}
+            />
             <FormInput
               name="description"
               type="textarea"
