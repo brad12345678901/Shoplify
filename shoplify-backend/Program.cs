@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using shoplify_backend.Data;
+using shoplify_backend.Interfaces;
 using shoplify_backend.Seeders;
+using shoplify_backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +23,7 @@ builder.Services.AddCors(options =>
         }
     );
 });
-
+builder.Services.AddScoped<IFileService, LocalFileService>();
 builder.Services.AddValidation();
 builder
     .Services.AddControllers()
@@ -65,9 +67,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseCors("AllowFrontend");
-
-// var apiGroup = app.MapGroup("/api");
-// apiGroup.MapProductsEndpoint();
 
 app.MapControllers();
 app.Run();

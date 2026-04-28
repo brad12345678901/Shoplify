@@ -2,15 +2,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using shoplify_backend.Data;
 using shoplify_backend.Dtos;
+using shoplify_backend.Interfaces;
 using shoplify_backend.Models;
 
 namespace shoplify_backend.Controllers;
 
 [ApiController]
 [Route("/api/[controller]")]
-public class ProductsController(ShoplifyContext db) : ControllerBase
+public class ProductsController(ShoplifyContext db, IFileService fileService) : ControllerBase
 {
     private readonly ShoplifyContext _db = db;
+
+    private readonly IFileService _fileService = fileService;
 
     [HttpGet]
     public async Task<IActionResult> Index()
@@ -44,7 +47,7 @@ public class ProductsController(ShoplifyContext db) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetItem(int id)
+    public async Task<IActionResult> GetProduct(int id)
     {
         var product = await _db.Products.FindAsync(id);
 
@@ -83,7 +86,7 @@ public class ProductsController(ShoplifyContext db) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddItem([FromForm] ProductRequestDto createdItem)
+    public async Task<IActionResult> AddProduct([FromForm] ProductRequestDto createdItem)
     {
         DateTime today = DateTime.UtcNow;
 
@@ -111,6 +114,21 @@ public class ProductsController(ShoplifyContext db) : ControllerBase
         _db.Products.Add(item);
         _db.SaveChanges();
 
+        string savedFileName = await _fileService.SaveFileAsync(
+            createdItem.File,
+            "products",
+            $"{createdItem.Name}-{item.Id}"
+        );
+
+        ProductImage productImage = new()
+        {
+            FileName = savedFileName,
+            Url = "",
+            ContentType = createdItem.File.ContentType,
+            Size = createdItem.File.Length,
+            ProductId = item.Id,
+        };
+
         var response = new
         {
             success = true,
@@ -118,12 +136,12 @@ public class ProductsController(ShoplifyContext db) : ControllerBase
             data = item,
         };
 
-        return CreatedAtAction(nameof(GetItem), new { id = item.Id }, response);
-        // return Ok(new { success = true, message = "TEST FILE" });
+        // return CreatedAtAction(nameof(GetProduct), new { id = item.Id }, response);
+        return Ok(new { success = true, message = "TEST FILE" });
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateItem(int id, ProductRequestDto updateProduct)
+    public async Task<IActionResult> UpdateProduct(int id, ProductRequestDto updateProduct)
     {
         var existingProduct = await _db.Products.FindAsync(id);
         DateTime today = DateTime.UtcNow;
@@ -160,7 +178,7 @@ public class ProductsController(ShoplifyContext db) : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteItem(int id)
+    public async Task<IActionResult> DeleteProduct(int id)
     {
         var existingProduct = await _db.Products.FindAsync(id);
         DateTime today = DateTime.UtcNow;

@@ -22,7 +22,6 @@ services:
       - ./shoplify-backend:/app
       - /app/obj
       - /app/bin
-      - ./uploads:/app/uploads
     depends_on:
       - db
     environment:
@@ -30,7 +29,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__shoplify-be=Host=host.docker.internal;Database=shoplify-db;Port=5632;Username=postgres;Password=root
       - FileStorage__Provider=Local
-      - FileStorage__BasePath=/app/uploads
+      - FileStorage__BasePath=/app/Storage
 
   db:
     image: postgres:18

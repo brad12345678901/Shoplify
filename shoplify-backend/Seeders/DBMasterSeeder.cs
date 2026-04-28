@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.StaticAssets;
 using shoplify_backend.Data;
+using shoplify_backend.Interfaces;
 
 namespace shoplify_backend.Seeders;
 

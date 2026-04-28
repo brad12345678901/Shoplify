@@ -2,6 +2,9 @@
 **/bin/
 **/obj/
 **/out/
+**/Resources/
+**/wwwroot/
+**/Storage/
 
 ## --- VS Code / Tools ---
 .vscode/

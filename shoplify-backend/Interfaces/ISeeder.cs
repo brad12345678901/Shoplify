@@ -1,6 +1,6 @@
 using shoplify_backend.Data;
 
-namespace shoplify_backend.Seeders;
+namespace shoplify_backend.Interfaces;
 
 public interface ISeeder
 {

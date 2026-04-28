@@ -1,6 +1,7 @@
 using System.Data.SqlTypes;
 using Bogus;
 using shoplify_backend.Data;
+using shoplify_backend.Interfaces;
 using shoplify_backend.Models;
 
 namespace shoplify_backend.Seeders;

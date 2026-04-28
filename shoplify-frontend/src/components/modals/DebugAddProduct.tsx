@@ -49,10 +49,6 @@ export default function DebugAddProductModal({
   };
 
   useEffect(() => {
-    console.log(productsForm);
-  }, [productsForm]);
-
-  useEffect(() => {
     if (!show) {
       setTimeout(() => {
         fileInput.current!.value = "";
@@ -68,14 +64,22 @@ export default function DebugAddProductModal({
 
     Object.entries(productsForm).forEach(([key, value]) => {
       if (value !== undefined) {
-        if (typeof value === "number") {
+        if (
+          (key === "file" && value instanceof File) ||
+          value instanceof Blob
+        ) {
+          formData.append(
+            key,
+            value,
+            `${productsForm.name ? productsForm.name : "sample_product"}.png`,
+          );
+        } else if (typeof value === "number") {
           formData.append(key, value.toString());
         } else {
           formData.append(key, value);
         }
       }
     });
-    console.log(productsForm);
     await addProducts(formData);
     onClose();
   };
