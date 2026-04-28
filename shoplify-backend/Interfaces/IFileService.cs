@@ -4,8 +4,16 @@ namespace shoplify_backend.Interfaces;
 
 public interface IFileService
 {
-    Task<string> SaveFileAsync(IFormFile file, string subFolder) =>
-        SaveFileAsync(file, subFolder, Path.GetFileNameWithoutExtension(file.FileName));
-    Task<string> SaveFileAsync(IFormFile file, string subFolder, string customFileName);
-    void DeleteFile(string fileName, string subFolder);
+    Task<(string location, string fileName)> SaveFileAsync(
+        IFormFile file,
+        string subFolder,
+        int id
+    ) => SaveFileAsync(file, subFolder, id, Path.GetFileNameWithoutExtension(file.FileName));
+    Task<(string location, string fileName)> SaveFileAsync(
+        IFormFile file,
+        string subFolder,
+        int id,
+        string customFileName
+    );
+    void DeleteFile(string fileName, string subFolder, int id);
 }

@@ -4,21 +4,26 @@ using shoplify_backend.Interfaces;
 
 namespace shoplify_backend.Services;
 
-public partial class LocalFileService : IFileService
+public partial class LocalImageFileService : IFileService
 {
     private readonly string _basePath;
 
-    public LocalFileService()
+    public LocalImageFileService()
     {
         _basePath = Path.Combine(Directory.GetCurrentDirectory(), "Storage");
     }
 
-    public async Task<string> SaveFileAsync(IFormFile file, string subFolder, string customFileName)
+    public async Task<(string location, string fileName)> SaveFileAsync(
+        IFormFile file,
+        string subFolder,
+        int id,
+        string customFileName
+    )
     {
         if (file == null)
-            return "";
+            return ("", "");
 
-        var folderPath = Path.Combine(_basePath, subFolder);
+        var folderPath = Path.Combine(_basePath, subFolder, id.ToString());
 
         if (!Directory.Exists(folderPath))
             Directory.CreateDirectory(folderPath);
@@ -32,12 +37,12 @@ public partial class LocalFileService : IFileService
             await file.CopyToAsync(stream);
         }
 
-        return fileName;
+        return ($"{subFolder}/{id}/{fileName}", fileName);
     }
 
-    public void DeleteFile(string fileName, string subFolder)
+    public void DeleteFile(string fileName, string subFolder, int id)
     {
-        var path = Path.Combine(_basePath, subFolder, fileName);
+        var path = Path.Combine(_basePath, subFolder, id.ToString(), fileName);
         if (File.Exists(path))
             File.Delete(path);
     }

@@ -114,20 +114,24 @@ public class ProductsController(ShoplifyContext db, IFileService fileService) : 
         _db.Products.Add(item);
         _db.SaveChanges();
 
-        string savedFileName = await _fileService.SaveFileAsync(
+        var (location, fileName) = await _fileService.SaveFileAsync(
             createdItem.File,
             "products",
+            item.Id,
             $"{createdItem.Name}-{item.Id}"
         );
 
         ProductImage productImage = new()
         {
-            FileName = savedFileName,
-            Url = "",
+            FileName = fileName,
+            Url = location,
             ContentType = createdItem.File.ContentType,
             Size = createdItem.File.Length,
             ProductId = item.Id,
         };
+
+        _db.ProductImage.Add(productImage);
+        _db.SaveChanges();
 
         var response = new
         {
@@ -136,8 +140,7 @@ public class ProductsController(ShoplifyContext db, IFileService fileService) : 
             data = item,
         };
 
-        // return CreatedAtAction(nameof(GetProduct), new { id = item.Id }, response);
-        return Ok(new { success = true, message = "TEST FILE" });
+        return CreatedAtAction(nameof(GetProduct), new { id = item.Id }, response);
     }
 
     [HttpPut("{id:int}")]

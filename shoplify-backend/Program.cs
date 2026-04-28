@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using shoplify_backend.Data;
 using shoplify_backend.Interfaces;
 using shoplify_backend.Seeders;
@@ -23,7 +24,10 @@ builder.Services.AddCors(options =>
         }
     );
 });
-builder.Services.AddScoped<IFileService, LocalFileService>();
+
+//DEPENDENCY INJECT
+builder.Services.AddScoped<IFileService, LocalImageFileService>();
+
 builder.Services.AddValidation();
 builder
     .Services.AddControllers()
@@ -69,4 +73,12 @@ using (var scope = app.Services.CreateScope())
 app.UseCors("AllowFrontend");
 
 app.MapControllers();
+var storagePath = Path.Combine(builder.Environment.ContentRootPath, "Storage");
+app.UseStaticFiles(
+    new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(storagePath),
+        RequestPath = "/cdn",
+    }
+);
 app.Run();
