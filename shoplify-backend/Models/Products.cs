@@ -23,4 +23,6 @@ public class Products
     public DateTime Updated_At { get; set; } = DateTime.UtcNow;
 
     public DateTime? Deleted_At { get; set; } = null;
+
+    public ICollection<ProductImage>? ProductImages { get; set; }
 }

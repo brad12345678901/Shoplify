@@ -6,7 +6,7 @@ export default function ProductBox(product: Products) {
       <div className = "relative">
         <img
           className="max-w-50 max-h-75"
-          src={"https://dummyimage.com/200x300/000/fff&text=Product"}
+          src={product.imageUrl.length !== 0 ? `product.imageUrl[0]` : "https://dummyimage.com/200x300/000/fff&text=Product"}
         />
         <div className="absolute transition-all ease-in-out duration-100 w-full z-10 bg-black/50 text-white p-2 -bottom-full group-hover:bottom-0 group-hover:left-0">
           <p>{product.name}</p>

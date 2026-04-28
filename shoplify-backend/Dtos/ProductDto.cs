@@ -1,4 +1,3 @@
-
 namespace shoplify_backend.Dtos;
 
 // A DTO is a contract between a client and a server since it represents
@@ -13,5 +12,6 @@ public record class ProductDto(
     int CategoryId,
     string CategoryName,
     string Created_at,
-    string Updated_at
+    string Updated_at,
+    List<string> ImageUrl
 );

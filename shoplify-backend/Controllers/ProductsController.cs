@@ -20,7 +20,6 @@ public class ProductsController(ShoplifyContext db, IFileService fileService) : 
     {
         var products = await _db
             .Products.Where(product => product.Deleted_At == null)
-            .Include(p => p.Category)
             .Select(p => new ProductDto(
                 p.Id,
                 p.Name,
@@ -31,7 +30,10 @@ public class ProductsController(ShoplifyContext db, IFileService fileService) : 
                 p.CategoryId,
                 p.Category != null ? p.Category.Name : string.Empty,
                 p.Created_At.ToString("MMM dd, yyyy"),
-                p.Updated_At.ToString("MMM dd, yyyy")
+                p.Updated_At.ToString("MMM dd, yyyy"),
+                p.ProductImages != null
+                    ? p.ProductImages.Select(img => img.Url).ToList()
+                    : new List<string>()
             ))
             .Take(50)
             .ToListAsync();
