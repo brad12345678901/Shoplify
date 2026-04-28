@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -8,8 +9,12 @@ using shoplify_backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//SETUP DATABASE
 builder.Services.AddDbContext<ShoplifyContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("shoplify-be"))
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("shoplify-be"),
+        option => option.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+    )
 );
 
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
@@ -34,6 +39,12 @@ builder
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.PropertyNamingPolicy = System
+            .Text
+            .Json
+            .JsonNamingPolicy
+            .CamelCase;
     });
 
 var app = builder.Build();
