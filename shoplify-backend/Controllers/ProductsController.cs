@@ -18,6 +18,7 @@ public class ProductsController(ShoplifyContext db, IFileService fileService) : 
     [HttpGet]
     public async Task<IActionResult> Index()
     {
+        var baseURL = $"{Request.Scheme}://{Request.Host}";
         var products = await _db
             .Products.Where(product => product.Deleted_At == null)
             .Select(p => new ProductDto(
@@ -32,7 +33,7 @@ public class ProductsController(ShoplifyContext db, IFileService fileService) : 
                 p.Created_At.ToString("MMM dd, yyyy"),
                 p.Updated_At.ToString("MMM dd, yyyy"),
                 p.ProductImages != null
-                    ? p.ProductImages.Select(img => img.Url).ToList()
+                    ? p.ProductImages.Select(img => $"{baseURL}/cdn/{img.Url}").ToList()
                     : new List<string>()
             ))
             .Take(50)
