@@ -166,7 +166,7 @@ export default function DebugAddProductModal({
               label="Product Stocks"
               onChange={handleFormInput}
             />
-            <Button type="submit" />
+            <Button type="submit">Submit</Button>
           </form>
         </div>
       </div>

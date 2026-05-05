@@ -1,8 +1,9 @@
-import { addProductsApi, fetchProductsApi } from "../services/productService"
+import { addProductsApi, fetchProductsApi, fetchProductApi } from "../services/productService"
 import { useProductStore } from "../../store/useProductStore"
 
 export const useProducts = () => {
     const setProducts = useProductStore((state) => state.setProducts)
+    const setProduct = useProductStore((state) => state.setProduct)
     const setProductsForm = useProductStore((state) => state.setProductsForm)
     const setLoading = useProductStore((state) => state.setLoading)
     const setSubmitLoading = useProductStore((state) => state.setSubmitLoading)
@@ -23,6 +24,20 @@ export const useProducts = () => {
         }
     }
 
+    const fetchProduct = async (id: number) => {
+        try {
+            setLoading(true);
+            const data = await fetchProductApi(id);
+            setProduct(data.data);
+            setLoading(false);
+            return { success: data.success, message: data.message }
+        } catch (error) {
+            console.error("ERROR: ", error);
+            setLoading(false);
+            return { success: false, message: "Something is Wrong" }
+        }
+    }
+
     const addProducts = async (formData: FormData) => {
         try {
             setSubmitLoading(true);
@@ -35,5 +50,5 @@ export const useProducts = () => {
         }
     }
 
-    return { fetchProducts, setProductsForm, resetProductsForm, addProducts }
+    return { fetchProducts, fetchProduct, setProductsForm, resetProductsForm, addProducts }
 }

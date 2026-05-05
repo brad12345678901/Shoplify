@@ -1,13 +1,15 @@
 import { create } from "zustand";
-import type { Products } from "../types/products";
+import type { Product } from "../types/products";
 import type { ProductForm } from "../types/ProductForm";
 
 interface ProductStore {
-    products: Products[],
+    products: Product[],
+    product: Product | null,
     productsForm: ProductForm,
     loading: boolean,
     submit_loading: boolean,
-    setProducts: (products: Products[]) => void,
+    setProducts: (products: Product[]) => void,
+    setProduct: (product: Product) => void,
     setProductsForm: (name: string, value: any) => void,
     setLoading: (loading: boolean) => void,
     setSubmitLoading: (submit_loading: boolean) => void,
@@ -16,6 +18,7 @@ interface ProductStore {
 
 const initialState = {
     products: [],
+    product: null,
     productForm: {
         name: "",
         type: "",
@@ -29,10 +32,12 @@ const initialState = {
 
 export const useProductStore = create<ProductStore>((set) => ({
     products: initialState.products,
+    product: initialState.product,
     productsForm: initialState.productForm,
     loading: false,
     submit_loading: false,
     setProducts: (products) => set({ products }),
+    setProduct: (product) => set({product}),
     setProductsForm: (name, value) => set((state) => ({
         productsForm: {
             ...state.productsForm,

@@ -12,6 +12,7 @@ type FormInputTypes = {
   inputRef?: React.Ref<HTMLInputElement | HTMLTextAreaElement>;
   inputClassName?: string;
   label?: string;
+  noLabel? : boolean;
   accept?: string;
   labelClassName?: string;
 };
@@ -29,9 +30,9 @@ export default function FormInput(props: FormInputTypes) {
     return (
       <>
         <div>
-          <label className={clsx("font-semibold pr-2", props.labelClassName)}>
+          {!props.noLabel && <label className={clsx("font-semibold pr-2", props.labelClassName)}>
             {props.label ? props.label : "Label"}
-          </label>
+          </label>}
           <input
             className={clsx(
               `border rounded-md outline-none ring-0 focus:outline-none focus:ring-0 p-2`,
@@ -53,9 +54,9 @@ export default function FormInput(props: FormInputTypes) {
     return (
       <>
         <div>
-          <label className={clsx("font-semibold pr-2", props.labelClassName)}>
+          {!props.noLabel && <label className={clsx("font-semibold pr-2", props.labelClassName)}>
             {props.label ? props.label : "Label"}
-          </label>
+          </label>}
           <textarea
             className={clsx(
               `border rounded-md outline-none ring-0 focus:outline-none focus:ring-0 p-2`,
