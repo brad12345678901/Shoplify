@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using shoplify_backend.Data;
@@ -26,7 +27,7 @@ public class ProductsController(ShoplifyContext db, IFileService fileService) : 
                 p.Name,
                 p.Type,
                 p.Description,
-                p.Price,
+                p.Price.ToString("C", new CultureInfo("en-PH")),
                 p.Stock,
                 p.CategoryId,
                 p.Category != null ? p.Category.Name : string.Empty,
@@ -52,7 +53,26 @@ public class ProductsController(ShoplifyContext db, IFileService fileService) : 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetProduct(int id)
     {
-        var product = await _db.Products.FindAsync(id);
+        var baseURL = $"{Request.Scheme}://{Request.Host}";
+        var product = await _db
+            .Products.Where(p => p.Id == id)
+            .Where(p => p.Deleted_At == null)
+            .Select(p => new ProductDto(
+                p.Id,
+                p.Name,
+                p.Type,
+                p.Description,
+                p.Price.ToString("C", new CultureInfo("en-PH")),
+                p.Stock,
+                p.CategoryId,
+                p.Category != null ? p.Category.Name : string.Empty,
+                p.Created_At.ToString("MMM dd, yyyy"),
+                p.Updated_At.ToString("MMM dd, yyyy"),
+                p.ProductImages != null
+                    ? p.ProductImages.Select(img => $"{baseURL}/cdn/{img.Url}").ToList()
+                    : new List<string>()
+            ))
+            .FirstOrDefaultAsync();
 
         if (product is null)
         {
@@ -62,18 +82,6 @@ public class ProductsController(ShoplifyContext db, IFileService fileService) : 
                     success = false,
                     message = $"Product {id} was not found",
                     data = product,
-                }
-            );
-        }
-
-        if (product.Deleted_At is not null)
-        {
-            return NotFound(
-                new
-                {
-                    success = false,
-                    message = $"Product {id} was not found",
-                    data = (Products?)null,
                 }
             );
         }

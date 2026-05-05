@@ -7,7 +7,7 @@ public record class ProductDto(
     string Name,
     string Type,
     string Description,
-    decimal Price,
+    string Price,
     int Stock,
     int CategoryId,
     string CategoryName,
