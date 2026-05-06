@@ -1,9 +1,15 @@
+using System.Net;
+using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using shoplify_backend.Data;
+using shoplify_backend.Dtos;
+using shoplify_backend.Exceptions;
 using shoplify_backend.Interfaces;
+using shoplify_backend.Models;
 using shoplify_backend.Seeders;
 using shoplify_backend.Services;
 
@@ -17,6 +23,10 @@ builder.Services.AddDbContext<ShoplifyContext>(options =>
     )
 );
 
+//Authorization & Authentication
+builder.Services.AddIdentity<Users, IdentityRole>().AddEntityFrameworkStores<ShoplifyContext>();
+
+//Allow Frontend Requests
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
 
 builder.Services.AddCors(options =>
@@ -30,8 +40,13 @@ builder.Services.AddCors(options =>
     );
 });
 
+//ExceptionHandler
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails(); // Required for modern exception handling
+
 //DEPENDENCY INJECT
 builder.Services.AddScoped<IFileService, LocalImageFileService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 builder.Services.AddValidation();
 builder
@@ -46,6 +61,28 @@ builder
             .JsonNamingPolicy
             .CamelCase;
     });
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context
+            .ModelState.Where(e => e.Value?.Errors.Count > 0)
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToArray()
+            );
+
+        var response = new ErrorResponse
+        {
+            Status = (int)HttpStatusCode.BadRequest,
+            Message = "Form Request Validation Error",
+            Errors = errors,
+        };
+
+        return new BadRequestObjectResult(response);
+    };
+});
 
 var app = builder.Build();
 
@@ -74,16 +111,32 @@ if (args.Contains("--seed"))
     return;
 }
 
-//AUTO MIGRATE
-using (var scope = app.Services.CreateScope())
+//Enable CORS
+if (app.Environment.IsDevelopment())
 {
-    var context = scope.ServiceProvider.GetRequiredService<ShoplifyContext>();
-    context.Database.Migrate();
+    //AUTO MIGRATE ON DEVELOPMENT
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<ShoplifyContext>();
+        context.Database.Migrate();
+
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        if (!await roleManager.RoleExistsAsync(Roles.Member))
+        {
+            await roleManager.CreateAsync(new IdentityRole(Roles.Member));
+        }
+        if (!await roleManager.RoleExistsAsync(Roles.Merchant))
+        {
+            await roleManager.CreateAsync(new IdentityRole(Roles.Merchant));
+        }
+    }
+
+    app.UseCors("AllowFrontend");
 }
 
-app.UseCors("AllowFrontend");
-
 app.MapControllers();
+
+//Storage Path
 var storagePath = Path.Combine(builder.Environment.ContentRootPath, "Storage");
 app.UseStaticFiles(
     new StaticFileOptions
@@ -92,4 +145,7 @@ app.UseStaticFiles(
         RequestPath = "/cdn",
     }
 );
+
+app.UseExceptionHandler();
+
 app.Run();

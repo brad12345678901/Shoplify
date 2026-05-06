@@ -10,35 +10,24 @@ namespace shoplify_backend.Controllers;
 
 [ApiController]
 [Route("/api/[controller]")]
-public class ProductsController(ShoplifyContext db, IFileService fileService) : ControllerBase
+public class ProductsController(
+    ShoplifyContext db,
+    IFileService fileService,
+    IProductService productService
+) : ControllerBase
 {
     private readonly ShoplifyContext _db = db;
 
     private readonly IFileService _fileService = fileService;
 
+    private readonly IProductService _productService = productService;
+
     [HttpGet]
     public async Task<IActionResult> Index()
     {
         var baseURL = $"{Request.Scheme}://{Request.Host}";
-        var products = await _db
-            .Products.Where(product => product.Deleted_At == null)
-            .Select(p => new ProductDto(
-                p.Id,
-                p.Name,
-                p.Type,
-                p.Description,
-                p.Price.ToString("C", new CultureInfo("en-PH")),
-                p.Stock,
-                p.CategoryId,
-                p.Category != null ? p.Category.Name : string.Empty,
-                p.Created_At.ToString("MMM dd, yyyy"),
-                p.Updated_At.ToString("MMM dd, yyyy"),
-                p.ProductImages != null
-                    ? p.ProductImages.Select(img => $"{baseURL}/cdn/{img.Url}").ToList()
-                    : new List<string>()
-            ))
-            .Take(50)
-            .ToListAsync();
+
+        var products = await _productService.GetActiveProductsAsync(baseURL);
 
         var response = new
         {
@@ -54,37 +43,8 @@ public class ProductsController(ShoplifyContext db, IFileService fileService) : 
     public async Task<IActionResult> GetProduct(int id)
     {
         var baseURL = $"{Request.Scheme}://{Request.Host}";
-        var product = await _db
-            .Products.Where(p => p.Id == id)
-            .Where(p => p.Deleted_At == null)
-            .Select(p => new ProductDto(
-                p.Id,
-                p.Name,
-                p.Type,
-                p.Description,
-                p.Price.ToString("C", new CultureInfo("en-PH")),
-                p.Stock,
-                p.CategoryId,
-                p.Category != null ? p.Category.Name : string.Empty,
-                p.Created_At.ToString("MMM dd, yyyy"),
-                p.Updated_At.ToString("MMM dd, yyyy"),
-                p.ProductImages != null
-                    ? p.ProductImages.Select(img => $"{baseURL}/cdn/{img.Url}").ToList()
-                    : new List<string>()
-            ))
-            .FirstOrDefaultAsync();
 
-        if (product is null)
-        {
-            return NotFound(
-                new
-                {
-                    success = false,
-                    message = $"Product {id} was not found",
-                    data = product,
-                }
-            );
-        }
+        var product = await _productService.GetActiveProductAsync(id, baseURL);
 
         return Ok(
             new
@@ -99,87 +59,53 @@ public class ProductsController(ShoplifyContext db, IFileService fileService) : 
     [HttpPost]
     public async Task<IActionResult> AddProduct([FromForm] ProductRequestDto createdItem)
     {
-        DateTime today = DateTime.UtcNow;
+        var baseURL = $"{Request.Scheme}://{Request.Host}";
+        var item = await _productService.AddProductAsync(createdItem, baseURL);
 
-        var existingCategory = await _db.Category.AnyAsync(c => c.Id == createdItem.Category);
-        if (!existingCategory)
+        if (item == null)
         {
             return BadRequest(
                 new
                 {
                     success = false,
-                    message = $"Category ID {createdItem.Category} do not exist",
-                    data = (Products?)null,
+                    message = "Something Wrong Happened",
+                    data = item,
                 }
             );
         }
-        Products item = new()
-        {
-            Name = createdItem.Name,
-            Type = createdItem.Type,
-            CategoryId = createdItem.Category,
-            Description = createdItem.Description,
-            Price = createdItem.Price,
-            Stock = createdItem.Stock,
-        };
-        _db.Products.Add(item);
-        _db.SaveChanges();
 
-        var (location, fileName) = await _fileService.SaveFileAsync(
-            createdItem.File,
-            "products",
-            item.Id,
-            $"{createdItem.Name}-{item.Id}"
+        return CreatedAtAction(
+            nameof(GetProduct),
+            new { id = item.Id },
+            new
+            {
+                success = true,
+                message = "Product added to Shoplify Inventory",
+                data = item,
+            }
         );
-
-        ProductImage productImage = new()
-        {
-            FileName = fileName,
-            Url = location,
-            ContentType = createdItem.File.ContentType,
-            Size = createdItem.File.Length,
-            ProductId = item.Id,
-        };
-
-        _db.ProductImage.Add(productImage);
-        _db.SaveChanges();
-
-        var response = new
-        {
-            success = true,
-            message = "Product added to Shoplify Inventory",
-            data = item,
-        };
-
-        return CreatedAtAction(nameof(GetProduct), new { id = item.Id }, response);
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateProduct(int id, ProductRequestDto updateProduct)
+    public async Task<IActionResult> UpdateProduct(
+        int id,
+        [FromForm] UpdateProductRequestDto updateProduct
+    )
     {
-        var existingProduct = await _db.Products.FindAsync(id);
-        DateTime today = DateTime.UtcNow;
-        if (existingProduct is null)
+        var baseURL = $"{Request.Scheme}://{Request.Host}";
+        var existingProduct = await _productService.UpdateProductAsync(id, updateProduct, baseURL);
+
+        if (existingProduct == null)
         {
-            return NotFound(
+            return BadRequest(
                 new
                 {
                     success = false,
-                    message = $"Product ID {id} do not exist",
-                    data = (Products?)null,
+                    message = "Something Wrong Happened",
+                    data = existingProduct,
                 }
             );
         }
-
-        existingProduct.Name = updateProduct.Name;
-        existingProduct.Type = updateProduct.Type;
-        existingProduct.CategoryId = updateProduct.Category;
-        existingProduct.Description = updateProduct.Description;
-        existingProduct.Price = updateProduct.Price;
-        existingProduct.Stock = updateProduct.Stock;
-        existingProduct.Updated_At = today;
-
-        await _db.SaveChangesAsync();
 
         return Ok(
             new
@@ -194,31 +120,8 @@ public class ProductsController(ShoplifyContext db, IFileService fileService) : 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteProduct(int id)
     {
-        var existingProduct = await _db.Products.FindAsync(id);
-        DateTime today = DateTime.UtcNow;
-        if (existingProduct is null)
-        {
-            return NotFound(
-                new
-                {
-                    success = false,
-                    message = $"Product ID {id} do not exist",
-                    data = (Products?)null,
-                }
-            );
-        }
-
-        if (existingProduct.Deleted_At is not null)
-            return NotFound(
-                new
-                {
-                    success = false,
-                    message = $"Product do not exist or already deleted",
-                    data = (Products?)null,
-                }
-            );
-
-        existingProduct.Deleted_At = today;
+        var baseURL = $"{Request.Scheme}://{Request.Host}";
+        var deletedProduct = await _productService.DeleteProductAsync(id, baseURL);
 
         await _db.SaveChangesAsync();
 
@@ -227,14 +130,8 @@ public class ProductsController(ShoplifyContext db, IFileService fileService) : 
             {
                 success = true,
                 message = $"Product ID {id} was deleted successfully",
-                data = existingProduct,
+                data = deletedProduct,
             }
         );
     }
-
-    // [HttpPost("uploadPicture")]
-    // public async Task<IActionResult> UploadFile(IFormFile file)
-    // {
-
-    // }
 }
