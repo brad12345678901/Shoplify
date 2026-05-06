@@ -6,7 +6,7 @@ import { BsCart4 } from "react-icons/bs";
 export default function UserHeader() {
   return (
     <>
-      <div className="sticky top-0 z-10 rounded-b-sm text-white bg-black flex w-full min-h-20 px-20 items-center justify-between">
+      <div className="fixed top-0 z-10 rounded-b-sm text-white bg-black flex w-full min-h-20 px-20 items-center justify-between">
         <img className="w-80 h-20 place-self-center" src={ShoplifyLogo} />
         <div>
           <FormInput

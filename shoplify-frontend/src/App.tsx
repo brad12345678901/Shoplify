@@ -3,9 +3,9 @@ import { useToast } from "./ToastProvider";
 import { useLocation } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import "./App.css";
-import NavigationHeader from "./components/Header";
-import UserHeader from "./components/ShoplifyHeader";
-import UserFooter from "./components/ShoplifyFooter";
+import NavigationHeader from "./components/NavigationHeader";
+import UserHeader from "./components/UserHeader";
+import UserFooter from "./components/UserFooter";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const HandleNoLinks = lazy(() => import("./pages/HandleNoLinks"));
@@ -15,7 +15,7 @@ function App() {
   const {pathname:url_location} = useLocation();
   return (
     <>
-    {url_location !== "/" ? <UserHeader /> : <NavigationHeader/>}
+    {url_location !== "/" ? <UserHeader /> : ""}
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/products/:id" element={<ViewProduct/>}/>

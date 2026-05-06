@@ -12,7 +12,7 @@ export default function ViewProduct() {
     fetchProduct(id);
   }, [])
   return (
-    <div>
+    <div className = "pt-20">
       <div className="flex flex-col justify-center items-center">
         <div className="bg-gray-200 grid grid-cols-5 w-[80vw] max-w-300 h-screen py-10 px-5 justify-self-center overflow-hidden">
           <img className = "col-span-2 justify-self-center" src={product ? product.imageUrl[0] : "https://dummyimage.com/300x400/000/fff&text=Product"} />

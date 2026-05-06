@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
-import { useProducts } from "../../store/hooks/useProductStore";
-import FormInput from "../FormInput";
-import FormSelector from "../FormSelector";
-import Button from "../Button";
-import FormPictureInput from "../FormPictureInput";
+import { useProducts } from "../../../store/hooks/useProductStore";
+import FormInput from "../../FormInput";
+import FormSelector from "../../FormSelector";
+import Button from "../../Button";
+import FormPictureInput from "../../FormPictureInput";
 import { useShallow } from "zustand/shallow";
-import { useProductStore } from "../../store/useProductStore";
-import { useCategoryStore } from "../../store/useCategoryStore";
-import { useCategory } from "../../store/hooks/useCategoryStore";
+import { useProductStore } from "../../../store/useProductStore";
+import { useCategoryStore } from "../../../store/useCategoryStore";
+import { useCategory } from "../../../store/hooks/useCategoryStore";
 
 type DebugAddProductModalProps = {
   show: boolean;
@@ -154,7 +154,7 @@ export default function DebugAddProductModal({
               value={productsForm.price}
               id="product_price"
               placeholder="Enter Product Price"
-              label="Product Type"
+              label="Product Price"
               onChange={handleFormInput}
             />
             <FormInput
