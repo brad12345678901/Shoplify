@@ -1,6 +1,11 @@
 # Shoplify
 Shoplify is a e-commerce website to shop out items, cash in, pay and get your items in a remote way. Developed by @brad1234567890 to test out features and explore technologies starting with this project as a starting ground for learning various technologies
 
+Transitioned to Java Spring Boot, Check it out here!
+
+Frontend: https://github.com/brad12345678901/Shoplify-Frontend-React
+Backend: https://github.com/brad12345678901/Shoplify-Backend-Springboot
+
 # Getting Started
 
 
